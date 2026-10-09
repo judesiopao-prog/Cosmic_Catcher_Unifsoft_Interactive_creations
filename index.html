@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Catcher - Game & Feedback System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="game-container">
+      
+        <!-- HUD OVERLAY -->
+        <div id="hud">
+            <div class="hud-item">Score: <span id="scoreDisplay">0</span></div>
+            <div class="hud-item">Level: <span id="levelDisplay">1</span></div>
+            <div class="hud-item">Time: <span id="timeDisplay">45</span>s</div>
+            <div class="hud-item">Lives: <span id="livesDisplay">3</span></div>
+        </div>
+
+        <!-- MAIN MENU -->
+        <div id="mainMenu" class="screen">
+            <h1>Cosmic Catcher</h1>
+            <p>Catch coins while dodging asteroids! Reach 150 points before time expires.</p>
+            <p><strong>Controls:</strong> LEFT / RIGHT Arrows or A / D keys.</p>
+            <div>
+                <button class="btn" id="startBtn">Start Game</button>
+                <button class="btn btn-secondary" id="openHighScoreBtn">High Scores</button>
+                <button class="btn btn-secondary" id="openFormBtnNav">Submit Feedback</button>
+            </div>
+        </div>
+
+        <!-- GAME OVER / VICTORY SCREEN -->
+        <div id="gameOverScreen" class="screen hidden">
+            <h1 id="gameResultTitle">Game Over</h1>
+            <p id="gameResultText">You ran out of lives!</p>
+            <p>Final Score: <span id="finalScoreDisplay">0</span></p>
+
+            <!-- HIGH SCORE SUBMISSION -->
+            <div id="highScoreInputContainer" class="hidden" style="margin: 15px 0;">
+                <input type="text" id="highScoreName" placeholder="Enter name for Leaderboard" maxlength="12" style="padding: 8px; font-size: 0.95rem; text-align: center;">
+                <button type="button" class="btn" id="saveHighScoreBtn" style="margin-top: 8px;">Save Score</button>
+                <p id="highScoreSavedMsg" class="hidden" style="color: #4ade80; margin-top: 5px; font-size: 0.85rem;">Saved to Leaderboard!</p>
+            </div>
+
+            <div>
+                <button class="btn" id="restartBtn">Play Again</button>
+                <button class="btn btn-secondary" id="menuBtn">Main Menu</button>
+                <button class="btn btn-secondary" id="openFormBtn">Submit Feedback</button>
+            </div>
+        </div>
+
+        <!-- HIGH SCORES SCREEN -->
+        <div id="highScoreScreen" class="screen hidden">
+            <div class="screen-content" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <h2>🏆 Top High Scores</h2>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Score</th>
+                            <th>Level</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody"></tbody>
+                </table>
+                <div>
+                    <button id="exportScoresBtn" class="btn btn-secondary">Export Scores (.txt)</button>
+                    <button id="closeHighScoreBtn" class="btn">Back to Menu</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEEDBACK SCREEN -->
+        <div id="feedbackScreen" class="screen hidden">
+            <h2>Player Feedback & Evaluation</h2>
+
+            <div id="formStatus" class="status" style="margin-bottom: 8px; font-size: 0.85rem; font-weight: bold;"></div>
+
+            <form id="contactForm" novalidate>
+                <div class="form-group">
+                    <label for="playerName">Player Name</label>
+                    <input type="text" id="playerName" name="playerName" maxlength="30">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #9ca3af; margin-top: 2px;">
+                        <span id="namePreview">Name preview: -</span>
+                        <span id="nameCounter">30 characters remaining</span>
+                    </div>
+                    <span class="error-message" id="nameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="playerEmail">Email Address</label>
+                    <input type="email" id="playerEmail" name="playerEmail">
+                    <span class="error-message" id="emailError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="feedbackCategory">Evaluation Category</label>
+                    <select id="feedbackCategory" name="feedbackCategory">
+                        <option value="">-- Select Category --</option>
+                        <option value="Controls">Controls & Responsiveness</option>
+                        <option value="Difficulty">Game Difficulty</option>
+                        <option value="Graphics">UI / Visual Design</option>
+                        <option value="Bug">Bug Report</option>
+                    </select>
+                    <span class="error-message" id="categoryError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="comments">Comments / Feedback</label>
+                    <textarea id="comments" name="comments" rows="2" maxlength="200"></textarea>
+                    <span class="error-message" id="commentsError"></span>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="consent" name="consent">
+                    <label for="consent" style="margin-bottom:0;">I confirm I have playtested this game.</label>
+                </div>
+                <span class="error-message" id="consentError"></span>
+
+                <div style="margin-top: 10px; text-align: center;">
+                    <button type="submit" class="btn">Submit Entry</button>
+                    <button type="button" class="btn btn-secondary" id="exportFeedbackBtn">Export Feedbacks (.txt)</button>
+                    <button type="button" class="btn btn-secondary" id="closeFormBtn">Back</button>
+                </div>
+            </form>
+
+            <!-- SUMMARY CARD -->
+            <div id="summaryCard" class="success-box" style="margin-top: 10px; text-align: left;" hidden>
+                <h3 style="margin-bottom: 6px; color: #4ade80;">Submission Summary</h3>
+                <p style="margin-bottom: 2px; color: #ffffff;"><strong>Name:</strong> <span id="summaryName"></span></p>
+                <p style="margin-bottom: 2px; color: #ffffff;"><strong>Email:</strong> <span id="summaryEmail"></span></p>
+                <p style="margin-bottom: 2px; color: #ffffff;"><strong>Category:</strong> <span id="summaryCategory"></span></p>
+                <p style="margin-bottom: 2px; color: #ffffff;"><strong>Comments:</strong> <span id="summaryComments"></span></p>
+                <p style="margin-bottom: 2px; color: #ffffff;"><strong>Playtested:</strong> <span id="summaryConsent"></span></p>
+            </div>
+        </div>
+
+        <!-- CANVAS -->
+        <canvas id="gameCanvas" width="600" height="520"></canvas>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="game-draw.js"></script>
+    <script src="game-logic.js"></script>
+    <script src="contact-form.js"></script>
+    <script src="high-score.js"></script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+COSMIC CATCHER
+LOCAL DATABASE / DEBUGGER SETUP GUIDE
+=====================================
+
+IMPORTANT
+---------
+
+The current version of Cosmic Catcher does NOT use a global online database.
+
+The database is LOCAL HOST BASED and is stored on the PC where the Node.js
+Express server is running.
+
+The data files are:
+
+    scores.json
+    feedback.json
+
+Your game communicates with the local Express server through:
+
+    /api/scores
+    /api/feedback
+
+This guide explains how a debugger can set up and run the project on their
+own Windows PC using Command Prompt (CMD).
+
+
+1. INSTALL NODE.JS
+------------------
+
+Install Node.js on the debugger's PC.
+
+After installation, open Command Prompt and check:
+
+    node -v
+
+Then:
+
+    npm -v
+
+Both commands should display a version number.
+
+
+2. COPY THE PROJECT
+--------------------
+
+Copy the complete Cosmic Catcher project folder onto the debugger's PC.
+
+Example location:
+
+    C:\CosmicCatcher
+
+The folder should contain files similar to:
+
+    index.html
+    styles.css
+    game-draw.js
+    game-logic.js
+    contact-form.js
+    high-score.js
+    server.js
+
+The database files may be created automatically by server.js, so these may not
+exist before the first server start:
+
+    scores.json
+    feedback.json
+
+
+3. OPEN CMD IN THE PROJECT FOLDER
+----------------------------------
+
+Open Command Prompt.
+
+Change to the project directory:
+
+    cd C:\CosmicCatcher
+
+You can check the contents with:
+
+    dir
+
+Make sure server.js is visible in the list.
+
+
+4. INITIALIZE THE NODE PROJECT IF NECESSARY
+--------------------------------------------
+
+If the project already contains package.json, skip this step.
+
+If package.json does NOT exist, run:
+
+    npm init -y
+
+
+5. INSTALL EXPRESS AND CORS
+---------------------------
+
+Run:
+
+    npm install express cors
+
+This installs the packages required by server.js.
+
+
+6. START THE LOCAL DATABASE SERVER
+-----------------------------------
+
+Run:
+
+    node server.js
+
+You should see a message similar to:
+
+    Server running on http://localhost:3000
+
+Keep this CMD window open.
+
+The server must remain running while the game is being tested.
+
+
+7. OPEN THE GAME
+-----------------
+
+With server.js still running, open a web browser and go to:
+
+    http://localhost:3000
+
+Do NOT open index.html by double-clicking it if you want the database API to
+work through the Express server.
+
+The game should now be loaded from the local Node.js server.
+
+
+8. HOW THE LOCAL DATABASE WORKS
+-------------------------------
+
+When the game saves a high score:
+
+    Game
+      |
+      v
+    POST /api/scores
+      |
+      v
+    Express server
+      |
+      v
+    scores.json
+
+When the game saves feedback:
+
+    Game
+      |
+      v
+    POST /api/feedback
+      |
+      v
+    Express server
+      |
+      v
+    feedback.json
+
+The JSON files are the current database for this project.
+
+
+9. CHECK THE HIGH-SCORE API
+---------------------------
+
+Open a second CMD window while server.js is still running.
+
+Run:
+
+    curl http://localhost:3000/api/scores
+
+If there are no scores yet, the result should be:
+
+    []
+
+If scores exist, JSON data will be displayed.
+
+
+10. CHECK THE FEEDBACK API
+--------------------------
+
+Run:
+
+    curl http://localhost:3000/api/feedback
+
+If there are no feedback entries, the result should be:
+
+    []
+
+Otherwise, the saved feedback entries will be displayed as JSON.
+
+
+11. TEST THE GAME
+-----------------
+
+In the browser at:
+
+    http://localhost:3000
+
+Test these functions:
+
+    - Start Game
+    - High Scores
+    - Submit Feedback
+    - Save Score
+    - Submit Entry
+
+After creating a high score, run:
+
+    curl http://localhost:3000/api/scores
+
+Again after submitting feedback, run:
+
+    curl http://localhost:3000/api/feedback
+
+The new entries should appear.
+
+
+12. VIEW THE DATABASE FILES DIRECTLY
+------------------------------------
+
+Stop the server only when necessary, then from CMD run:
+
+    type scores.json
+
+and:
+
+    type feedback.json
+
+You can also open both files in a text editor.
+
+The files are located in the same project folder as server.js unless the code
+has been changed.
+
+
+13. IMPORTANT: THIS DATABASE IS NOT SHARED GLOBALLY
+----------------------------------------------------
+
+If the debugger runs the project on their own PC, their server will have its
+own local database files:
+
+    scores.json
+    feedback.json
+
+Those files are separate from the developer's PC.
+
+For example:
+
+    Developer PC
+        scores.json
+        feedback.json
+
+    Debugger PC
+        scores.json
+        feedback.json
+
+These are NOT automatically synchronized.
+
+
+14. HOW TO SHARE ONE LOCAL DATABASE ON A LAN
+---------------------------------------------
+
+If the debugger needs to connect to the developer's running server instead of
+creating a separate local database, the developer's server PC must be reachable
+on the same local network.
+
+In server.js, change the server startup from:
+
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+
+to:
+
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+    });
+
+Then restart the server.
+
+
+15. FIND THE SERVER PC'S IP ADDRESS
+-----------------------------------
+
+On the PC running server.js, open CMD and run:
+
+    ipconfig
+
+Find the IPv4 Address of the active Wi-Fi or Ethernet connection.
+
+Example:
+
+    IPv4 Address. . . . . . . . . . : 192.168.1.25
+
+The real address will be different on each network.
+
+
+16. DEBUGGER CONNECTING TO THE DEVELOPER'S SERVER
+--------------------------------------------------
+
+If both PCs are on the same local network, the debugger can open:
+
+    http://192.168.1.25:3000
+
+Replace 192.168.1.25 with the actual server PC IPv4 address.
+
+The debugger should NOT use localhost for the developer's server.
+
+For example:
+
+    Developer PC:
+        http://localhost:3000
+
+    Debugger PC:
+        http://192.168.1.25:3000
+
+This causes the debugger's browser to communicate with the developer's
+Express server and therefore use the developer's scores.json and feedback.json.
+
+
+17. TEST SERVER ACCESS FROM THE DEBUGGER PC
+--------------------------------------------
+
+On the debugger's PC, open CMD and run:
+
+    curl http://192.168.1.25:3000/api/scores
+
+and:
+
+    curl http://192.168.1.25:3000/api/feedback
+
+Replace the IP address with the actual server PC address.
+
+If the commands return JSON, the debugger can reach the database server.
+
+
+18. WINDOWS FIREWALL
+--------------------
+
+If the debugger cannot connect, Windows Firewall may be blocking TCP port 3000.
+
+On the server PC, open Command Prompt AS ADMINISTRATOR and run:
+
+    netsh advfirewall firewall add rule name="Cosmic Catcher Node Server" dir=in action=allow protocol=TCP localport=3000
+
+After testing, the rule can be removed with:
+
+    netsh advfirewall firewall delete rule name="Cosmic Catcher Node Server"
+
+
+19. BOTH PCS SHOULD USE THE SAME NETWORK
+-----------------------------------------
+
+For the LAN method:
+
+    Developer PC -> Wi-Fi / Ethernet -> same LAN <- Wi-Fi / Ethernet <- Debugger PC
+
+Example:
+
+    Developer: 192.168.1.25
+    Debugger:  192.168.1.40
+
+The exact addresses do not need to be these values; they are examples only.
+
+
+20. STOPPING THE SERVER
+-----------------------
+
+To stop the Node.js server, return to the CMD window where server.js is running
+and press:
+
+    Ctrl + C
+
+Then the local API server will stop.
+
+
+21. SIMPLE DEBUGGER PROCEDURE
+-----------------------------
+
+OPTION A - RUN THE PROJECT ON THE DEBUGGER'S OWN PC
+
+    1. Install Node.js.
+    2. Copy the project folder.
+    3. Open CMD.
+    4. Run:
+
+           cd C:\CosmicCatcher
+
+    5. Run:
+
+           npm install express cors
+
+    6. Run:
+
+           node server.js
+
+    7. Open:
+
+           http://localhost:3000
+
+    8. Test the game.
+
+This creates and uses a LOCAL database on the debugger's PC.
+
+
+OPTION B - USE THE DEVELOPER'S LOCAL SERVER
+
+    1. Developer starts server.js.
+    2. Developer changes app.listen to listen on 0.0.0.0.
+    3. Developer runs ipconfig.
+    4. Developer gives the debugger the IPv4 address.
+    5. Both PCs connect to the same LAN.
+    6. Debugger opens:
+
+           http://SERVER-IP:3000
+
+    7. Debugger tests:
+
+           http://SERVER-IP:3000/api/scores
+
+           http://SERVER-IP:3000/api/feedback
+
+This allows the debugger to see the SAME local database files that are stored
+on the developer's server PC.
+
+
+22. CURRENT DATABASE LIMITATION
+-------------------------------
+
+This project currently uses a local JSON-file database, not Firebase,
+Firestore, MySQL, PostgreSQL, MongoDB, or another cloud database.
+
+Therefore:
+
+    Localhost database:       YES
+    Local JSON storage:       YES
+    Shared over LAN:           YES, if configured
+    Global cloud database:     NO
+    Automatic synchronization: NO
+
+A future Firebase/Firestore migration would be required for a truly global
+online database that can be accessed from different networks without one PC
+running the local Express server.
+
+
+QUICK COMMAND SUMMARY
+---------------------
+
+Install packages:
+
+    npm install express cors
+
+Start server:
+
+    node server.js
+
+Open game locally:
+
+    http://localhost:3000
+
+Check high scores:
+
+    curl http://localhost:3000/api/scores
+
+Check feedback:
+
+    curl http://localhost:3000/api/feedback
+
+Find PC IP address:
+
+    ipconfig
+
+Stop server:
+
+    Ctrl + C
+
