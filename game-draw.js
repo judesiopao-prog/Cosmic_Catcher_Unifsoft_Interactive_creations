@@ -11,48 +11,21 @@ orbImage.src = 'coin.png';
 const hazardImage = new Image();
 hazardImage.src = 'asteroid.png';
 
+const spaceshipImage = new Image();
+spaceshipImage.src = 'spaceship-updated.png';
+
 // ============================================================
 // DRAW / RENDERING
 // ============================================================
 
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // DRAW PLAYER (SPACESHIP)
-    ctx.save();
-    
-    // Spaceship Hull / Body
-    ctx.fillStyle = '#38bdf8';
-    ctx.strokeStyle = '#93c5fd';
-    ctx.lineWidth = 2;
-
-    ctx.beginPath();
-    // Nose cone (pointing up)
-    ctx.moveTo(player.x + player.width / 2, player.y);
-    // Bottom right wing
-    ctx.lineTo(player.x + player.width, player.y + player.height);
-    // Engine exhaust indentation in the center
-    ctx.lineTo(player.x + player.width / 2, player.y + player.height * 0.75);
-    // Bottom left wing
-    ctx.lineTo(player.x, player.y + player.height);
-    ctx.closePath();
-
-    ctx.fill();
-    ctx.stroke();
-
-    // Cockpit Window
-    ctx.fillStyle = '#e0f2fe';
-    ctx.beginPath();
-    ctx.arc(
-        player.x + player.width / 2, 
-        player.y + player.height * 0.45, 
-        Math.max(3, player.width * 0.12), 
-        0, 
-        Math.PI * 2
+// DRAW PLAYER IMAGE INSTEAD OF VECTOR SHAPE
+    ctx.drawImage(
+        spaceshipImage,
+        player.x,
+        player.y,
+        player.width,
+        player.height
     );
-    ctx.fill();
-
-    ctx.restore();
 
     // DRAW COIN IMAGES
     collectibles.forEach((item) => {
